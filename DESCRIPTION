@@ -1,0 +1,31 @@
+Package: imdfa
+Title: Real-time Multivariate Signal Extraction
+Description: Frequency-domain approach to building real-time filters for
+    multivariate time series
+URL: http://blog.zhaw.ch/idp/sefblog/
+Version: 0.1
+Maintainer: Kent Hoxsey <khoxsey@gmail.com> and Seth Wayland
+    <sethwayland@gmail.com>
+Author: Marc Wildi <wlmr@zhaw.ch>
+Imports:
+    zoo,
+    xts
+Depends:
+    Rcpp (>= 0.10.1)
+LinkingTo: Rcpp
+License: GPL (>= 2)
+LazyData: TRUE
+Collate:
+    'coef-mdfa.r'
+    'data.r'
+    'help.r'
+    'imdfa.R'
+    'mdfa.r'
+    'plot-mdfa.r'
+    'plot-predict-mdfa.r'
+    'predict-mdfa.r'
+    'summary-mdfa.r'
+    'summary-predict-mdfa.r'
+    'DFT.r'
+    'tools.r'
+    'I-MDFA_tidy.r'
