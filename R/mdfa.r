@@ -26,17 +26,7 @@ mdfa_model_matrix <- function(formula, data) {
 #' the data object must be a data frome or list.
 #' @param ... further arguments to be passed to mdfa_core
 #' @keywords dfa mdfa imdfa
-#' @export mdfa
-#' @S3method mdfa default
-#' @S3method mdfa formula
-#' @S3method mdfa data.frame
-#' @S3method mdfa matrix
-#' @S3method mdfa spectral_estimate
-#' @method mdfa default
-#' @method mdfa formula
-#' @method mdfa data.frome
-#' @method mdfa matrix
-#' @method mdfa spectral_estimate
+#' @export
 #' @examples
 #' m <- mdfa(y ~ a + b, df)
 #' summary(m)
@@ -70,6 +60,10 @@ mdfa.default <- function(data, formula = NULL, keep_data = TRUE, spectral_estima
         args_list[['spectral_estimate']] <- spectral_estimate
     }
     mdfa.orig <- do.call(mdfa_core, args_list)
+#    mdfa.orig <- with(mf_env, mdfa_analytic_new(K, L, lambda, spectral_estimate, Lag, Gamma, expweight, 
+#            cutoff, i1, i2, weight_constraint, lambda_cross, lambda_decay, lambda_smooth,
+#            lin_expweight, shift_constraint, grand_mean))
+#    mdfa.orig$options <- as.environment(as.list(opts_env, all.names = TRUE))
     mdfa.orig$call <- cl
     mdfa.orig$formula <- formula
     if (cls_data == 'xts') data <- xts(data, order.by = ix_data)
@@ -90,9 +84,7 @@ mdfa.default <- function(data, formula = NULL, keep_data = TRUE, spectral_estima
 #' object, prints the matrix of coefficients.
 #'
 #' @param object fitted mdfa object
-#' @export print.mdfa print.mdfa_coef
 #' @S3method print mdfa
-#' @S3method print mdfa_coef
 print.mdfa <- function(x, ...) {
 	invisible(str(x))
 }
