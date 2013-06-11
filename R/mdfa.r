@@ -19,7 +19,8 @@ mdfa_model_matrix <- function(formula, data) {
 
 #' Fit an i-mdfa model.
 #'
-#' Main function to calculate filter using I-MDFA code.
+#' Main function to calculate filter using I-MDFA code. If a formula is not used, the first column of
+#' the data is the dependent, and the remaining columns are the predictors.
 #'
 #' @param data a data.frame, list, matrix, vector or xts data series
 #' @param formula a symbolic description of the model as a formula object. If a formula is used,
@@ -113,9 +114,25 @@ mdfa.formula <- function(fmla, data, keep_data = TRUE, d = 0, ...) {
 }
 
 mdfa.data.frame <- function(data, keep_data = TRUE, d = 0, ...) {
-    warning("mdfa.data.frame not yet implemented")
+    args_list <- as.list(environment())
+    cl <- match.call()
+    data <- as.matrix(data)
+    if (NCOL(data) == 1) data <- cbind(data,data)
+    spectral_estimate <- calc_dfts(data, NROW(data), d)
+    args_list[['spectral_estimate']] <- spectral_estimate
+    mdfa.orig <- do.call(mdfa_core, args_list)
+    mdfa.orig$call <- cl
+    if (keep_data) mdfa.orig$data <- data
+    class(mdfa.orig) <- c('mdfa', class(mdfa.orig))
+    class(mdfa.orig$b) <- c('mdfa_coef', class(mdfa.orig$b))
+    return(mdfa.orig)
 }
 
+mdfa.xts <- function(data, keep_data = TRUE, d = 0, ...) {
+    warning("mdfa.xts not yet implemented")
+}
+
+#' First column is the dependent, the rest of the columns are predictors.
 mdfa.matrix <- function(data, keep_data = TRUE, d = 0, ...) {
     args_list <- as.list(environment())
     cl <- match.call()
