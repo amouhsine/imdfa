@@ -53,17 +53,11 @@ mdfa.default <- function(data, formula = NULL, keep_data = TRUE, spectral_estima
         data <- as.matrix(data)
     }
     if (NCOL(data) == 1) data <- cbind(data,data) 
-    #opts_env <- set_options(nr = NROW(data), nc = NCOL(data), ...)
-    #parent.env(mf_env) <- opts_env
     if (is.null(spectral_estimate)) {
         spectral_estimate <- calc_dfts(data, NROW(data), d)
         args_list[['spectral_estimate']] <- spectral_estimate
     }
     mdfa.orig <- do.call(mdfa_core, args_list)
-#    mdfa.orig <- with(mf_env, mdfa_analytic_new(K, L, lambda, spectral_estimate, Lag, Gamma, expweight, 
-#            cutoff, i1, i2, weight_constraint, lambda_cross, lambda_decay, lambda_smooth,
-#            lin_expweight, shift_constraint, grand_mean))
-#    mdfa.orig$options <- as.environment(as.list(opts_env, all.names = TRUE))
     mdfa.orig$call <- cl
     mdfa.orig$formula <- formula
     if (cls_data == 'xts') data <- xts(data, order.by = ix_data)
@@ -123,7 +117,17 @@ mdfa.data.frame <- function(data, keep_data = TRUE, d = 0, ...) {
 }
 
 mdfa.matrix <- function(data, keep_data = TRUE, d = 0, ...) {
-    warning("mdfa.matrix not yet implemented")
+    args_list <- as.list(environment())
+    cl <- match.call()
+    if (NCOL(data) == 1) data <- cbind(data,data)
+    spectral_estimate <- calc_dfts(data, NROW(data), d)
+    args_list[['spectral_estimate']] <- spectral_estimate
+    mdfa.orig <- do.call(mdfa_core, args_list)
+    mdfa.orig$call <- cl
+    if (keep_data) mdfa.orig$data <- data
+    class(mdfa.orig) <- c('mdfa', class(mdfa.orig))
+    class(mdfa.orig$b) <- c('mdfa_coef', class(mdfa.orig$b))
+    return(mdfa.orig)
 }
 
 mdfa.spectral_estimate <- function(spectral_estimate, L, Gamma, cutoff, ...) {
