@@ -17,6 +17,23 @@ mdfa_model_matrix <- function(formula, data) {
     return(mat)
 }
 
+#' Core calculation for mdfa
+#' 
+#' Wrapper around Marc's code that sets defaults and is available for dispatch 
+#' from within the mdfa family of functions.
+#' 
+mdfa_core <- function(L, Gamma, cutoff, spectral_estimate, K=NROW(spectral_estimate)-1, lambda=0, Lag=0, expweight=0, 
+        i1=FALSE, i2=FALSE, weight_constraint=1, lambda_cross=0, lambda_decay=c(0, 0), lambda_smooth=0.1,
+        lin_expweight=FALSE, shift_constraint=0, grand_mean=TRUE, ...) {
+    args_list <- as.list(environment())
+    args_list[['data']] <- NULL
+    args_list[['weight_func']] <- spectral_estimate
+    args_list[['spectral_estimate']] <- NULL
+    if (is.null(Gamma))
+        args_list[['Gamma']] <- lowpass_filter_spec(K, L, cutoff)
+    return(do.call(mdfa_analytic_new, args_list))
+}
+
 #' Fit an i-mdfa model.
 #'
 #' Main function to calculate filter using I-MDFA code. If a formula is not used, the first column of
@@ -35,6 +52,10 @@ mdfa_model_matrix <- function(formula, data) {
 #' coef(m)
 #' mp <- predict(m)
 #' plot(mp)
+mdfa <- function(x, ...) {
+    UseMethod("mdfa", x)
+}
+
 mdfa.default <- function(data, formula = NULL, keep_data = TRUE, spectral_estimate = NULL, d = 0,
                          cutoff = pi/12, Gamma = NULL, L = 24, ...) {
     args_list <- as.list(environment())
@@ -71,42 +92,6 @@ mdfa.default <- function(data, formula = NULL, keep_data = TRUE, spectral_estima
     }
     class(mdfa.orig$b) <- c('mdfa_coef', class(mdfa.orig$b))
     return(mdfa.orig)
-}
-
-#' Print methods for class "mdfa" and "mdfa_coef".
-#'
-#' Prints out the str() representation of the mdfa object. For the `mdfa_coef`
-#' object, prints the matrix of coefficients.
-#'
-#' @param object fitted mdfa object
-#' @S3method print mdfa
-print.mdfa <- function(x, ...) {
-	invisible(str(x))
-}
-print.mdfa_coef <- function(x, ...) {
-	NextMethod(x)
-}
-
-#' Core calculation for mdfa
-#' 
-#' Wrapper around Marc's code that sets defaults and is available for dispatch 
-#' from within the mdfa family of functions.
-#' 
-mdfa_core <- function(L, Gamma, cutoff, spectral_estimate, K=NROW(spectral_estimate)-1, lambda=0, Lag=0, expweight=0, 
-                      i1=FALSE, i2=FALSE, weight_constraint=1, lambda_cross=0, lambda_decay=c(0, 0), lambda_smooth=0.1,
-                      lin_expweight=FALSE, shift_constraint=0, grand_mean=TRUE, ...) {
-    args_list <- as.list(environment())
-    args_list[['data']] <- NULL
-    args_list[['weight_func']] <- spectral_estimate
-    args_list[['spectral_estimate']] <- NULL
-    if (is.null(Gamma))
-        args_list[['Gamma']] <- lowpass_filter_spec(K, L, cutoff)
-    return(do.call(mdfa_analytic_new, args_list))
-}
-
-
-mdfa <- function(x, ...) {
-    UseMethod("mdfa", x)
 }
 
 mdfa.formula <- function(fmla, data, keep_data = TRUE, d = 0, ...) {
@@ -149,6 +134,7 @@ mdfa.data.frame <- function(data, keep_data = TRUE, d = 0, ...) {
     mdfa.orig$call <- cl
     if (keep_data) mdfa.orig$data <- data
     class(mdfa.orig) <- c('mdfa', class(mdfa.orig))
+    colnames(mdfa.orig$b) <- colnames(data)[-1]
     class(mdfa.orig$b) <- c('mdfa_coef', class(mdfa.orig$b))
     return(mdfa.orig)
 }
@@ -185,6 +171,7 @@ mdfa.matrix <- function(data, keep_data = TRUE, d = 0, ...) {
     mdfa.orig$call <- cl
     if (keep_data) mdfa.orig$data <- data
     class(mdfa.orig) <- c('mdfa', class(mdfa.orig))
+    colnames(mdfa.orig$b) <- colnames(data)[-1]
     class(mdfa.orig$b) <- c('mdfa_coef', class(mdfa.orig$b))
     return(mdfa.orig)
 }
@@ -197,4 +184,18 @@ mdfa.spectral_estimate <- function(spectral_estimate, L, Gamma, cutoff, ...) {
     class(mdfa.orig) <- c('mdfa', class(mdfa.orig))
     class(mdfa.orig$b) <- c('mdfa_coef', class(mdfa.orig$b))
     return(mdfa.orig)
+}
+
+#' Print methods for class "mdfa" and "mdfa_coef".
+#'
+#' Prints out the str() representation of the mdfa object. For the `mdfa_coef`
+#' object, prints the matrix of coefficients.
+#'
+#' @param object fitted mdfa object
+#' @S3method print mdfa
+print.mdfa <- function(x, ...) {
+    invisible(str(x))
+}
+print.mdfa_coef <- function(x, ...) {
+    NextMethod(x)
 }
