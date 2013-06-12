@@ -154,7 +154,25 @@ mdfa.data.frame <- function(data, keep_data = TRUE, d = 0, ...) {
 }
 
 mdfa.xts <- function(data, keep_data = TRUE, d = 0, ...) {
-    warning("mdfa.xts not yet implemented")
+    args_list <- as.list(environment())
+    cl <- match.call()
+    ix_data <- index(data)
+    data <- coredata(data)
+    cls_data <- 'xts'
+    if (is.list(data)) data <- as.data.frame(data, stringsAsFactors = FALSE)
+    data <- as.matrix(data)
+    if (NCOL(data) == 1) data <- cbind(data,data)
+    spectral_estimate <- calc_dfts(data, NROW(data), d)
+    args_list[['spectral_estimate']] <- spectral_estimate
+    mdfa.orig <- do.call(mdfa_core, args_list)
+    mdfa.orig$call <- cl
+    mdfa.orig$formula <- formula
+    data <- xts(data, order.by = ix_data)
+    if (keep_data) mdfa.orig$data <- data
+    class(mdfa.orig) <- c('mdfa', class(mdfa.orig))
+    colnames(mdfa.orig$b) <- colnames(data)[-1]
+    class(mdfa.orig$b) <- c('mdfa_coef', class(mdfa.orig$b))
+    return(mdfa.orig)
 }
 
 mdfa.matrix <- function(data, keep_data = TRUE, d = 0, ...) {
