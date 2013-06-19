@@ -1,10 +1,8 @@
-\name{mdfa.default}
-\alias{mdfa.default}
+\name{mdfa}
+\alias{mdfa}
 \title{Fit an i-mdfa model.}
 \usage{
-  \method{mdfa}{default} (data, formula = NULL,
-    keep_data = TRUE, spectral_estimate = NULL, d = 0,
-    cutoff = pi/12, Gamma = NULL, L = 24, ...)
+  mdfa(x, ...)
 }
 \arguments{
   \item{data}{a data.frame, list, matrix, vector or xts
@@ -17,7 +15,9 @@
   \item{...}{further arguments to be passed to mdfa_core}
 }
 \description{
-  Main function to calculate filter using I-MDFA code.
+  Main function to calculate filter using I-MDFA code. If a
+  formula is not used, the first column of the data is the
+  dependent, and the remaining columns are the predictors.
 }
 \examples{
 m <- mdfa(y ~ a + b, df)
