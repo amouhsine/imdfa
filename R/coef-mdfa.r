@@ -3,7 +3,7 @@
 #' Long description
 #'
 #' @param model mdfa model object
-#' @export
+#' @S3method coef mdfa
 #' @examples
 #' m <- mdfa(y ~ a + b, df)
 #' coef(m)

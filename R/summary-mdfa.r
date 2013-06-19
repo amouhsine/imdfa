@@ -3,7 +3,7 @@
 #' Long description
 #'
 #' @param object fitted mdfa object
-#' @export
+#' @S3method summary mdfa
 summary.mdfa <- function(object) {
-	NULL
+	warning("Summary not yet implemented for mdfa.")
 }

@@ -4,7 +4,7 @@
 #'
 #' @param object mdfa object
 #' @param data new data for use in prediction
-#' @export
+#' @S3method predict mdfa
 predict.mdfa <- function(object, data=NULL) {
     if (is.null(data)) data <- object$data[,-1]
     cls_data <- class(data)
@@ -37,7 +37,7 @@ predict.mdfa <- function(object, data=NULL) {
 #' Long description
 #'
 #' @param object mdfa prediction object
-#' @export
+#' @S3method print predict_mdfa
 print.predict_mdfa <- function(x, ...) {
     invisible(print(as.vector(x)))
 }
