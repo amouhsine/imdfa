@@ -39,5 +39,5 @@ predict.mdfa <- function(object, data=NULL) {
 #' @param object mdfa prediction object
 #' @S3method print predict_mdfa
 print.predict_mdfa <- function(x, ...) {
-    invisible(print(as.vector(x)))
+    NextMethod(print, x)
 }
