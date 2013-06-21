@@ -30,7 +30,7 @@ lowpass_filter_spec <- function(grid_size, filter_length, noise_cutoff) {
     return(Gamma)
 }
 
-## code formatiing for Marc's code.
+## code formatting for Marc's code.
 ## Here so that there is a record of how it was performed.
 #library(formatR)
 #tidy.source(source = 'imdfa/inst/I-MDFA.r',

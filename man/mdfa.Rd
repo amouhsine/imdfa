@@ -12,6 +12,11 @@
   formula object. If a formula is used, the data object
   must be a data frome or list.}
 
+  \item{spectral_estimate}{The spectral estimate. Usually
+  the output of a DFT for each of the variables.  If a
+  spectral_estimate is passed into any of these methods,
+  data and formula parameters are ignored.}
+
   \item{...}{further arguments to be passed to mdfa_core}
 }
 \description{

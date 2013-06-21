@@ -42,6 +42,9 @@ mdfa_core <- function(L, cutoff, spectral_estimate, Gamma=NULL, K=NROW(spectral_
 #' @param data a data.frame, list, matrix, vector or xts data series
 #' @param formula a symbolic description of the model as a formula object. If a formula is used,
 #' the data object must be a data frome or list.
+#' @param spectral_estimate The spectral estimate. Usually the output of a DFT for each of the variables. 
+#'                          If a spectral_estimate is passed into any of these methods, data and formula 
+#'                          parameters are ignored.
 #' @param ... further arguments to be passed to mdfa_core
 #' @keywords dfa mdfa imdfa
 #' @export mdfa
@@ -52,7 +55,8 @@ mdfa_core <- function(L, cutoff, spectral_estimate, Gamma=NULL, K=NROW(spectral_
 #' @S3method mdfa matrix
 #' @S3method mdfa spectral_estimate
 #' @examples
-#' m <- mdfa(y ~ a + b, df)
+#' # Reproduce Wildi's 2012-06 EURI example
+#' m <- mdfa(y ~ a + b, euri)
 #' summary(m)
 #' plot(m)
 #' coef(m)
@@ -64,7 +68,7 @@ mdfa <- function(x, ...) {
 
 mdfa.default <- function(data, formula = NULL, keep_data = TRUE, spectral_estimate = NULL, d = 0,
                          cutoff = pi/12, Gamma = NULL, L = 24, ...) {
-    args_list <- as.list(environment())
+    args_list <- c(as.list(environment()), list(...))
     cl <- match.call()
     tm <- NULL
 	cls_data = 't'
@@ -101,7 +105,7 @@ mdfa.default <- function(data, formula = NULL, keep_data = TRUE, spectral_estima
 }
 
 mdfa.formula <- function(fmla, data, keep_data = TRUE, d = 0, cutoff = pi/12, L = 24, ...) {
-    args_list <- as.list(environment())
+    args_list <- c(as.list(environment()), list(...))
     cl <- match.call()
     tm <- NULL
     cls_data = 't'
@@ -130,7 +134,7 @@ mdfa.formula <- function(fmla, data, keep_data = TRUE, d = 0, cutoff = pi/12, L 
 }
 
 mdfa.data.frame <- function(data, keep_data = TRUE, d = 0, cutoff = pi/12, L = 24, ...) {
-    args_list <- as.list(environment())
+    args_list <- c(as.list(environment()), list(...))
     cl <- match.call()
     data <- as.matrix(data)
     if (NCOL(data) == 1) data <- cbind(data,data)
@@ -146,7 +150,7 @@ mdfa.data.frame <- function(data, keep_data = TRUE, d = 0, cutoff = pi/12, L = 2
 }
 
 mdfa.xts <- function(data, keep_data = TRUE, d = 0, cutoff = pi/12, L = 24, ...) {
-    args_list <- as.list(environment())
+    args_list <- c(as.list(environment()), list(...))
     cl <- match.call()
     ix_data <- index(data)
     data <- coredata(data)
@@ -168,7 +172,7 @@ mdfa.xts <- function(data, keep_data = TRUE, d = 0, cutoff = pi/12, L = 24, ...)
 }
 
 mdfa.matrix <- function(data, keep_data = TRUE, d = 0, cutoff = pi/12, L = 24, ...) {
-    args_list <- as.list(environment())
+    args_list <- c(as.list(environment()), list(...))
     cl <- match.call()
     if (NCOL(data) == 1) data <- cbind(data,data)
     spectral_estimate <- calc_dfts(data, NROW(data), d)
@@ -183,7 +187,7 @@ mdfa.matrix <- function(data, keep_data = TRUE, d = 0, cutoff = pi/12, L = 24, .
 }
 
 mdfa.spectral_estimate <- function(spectral_estimate, L, Gamma, cutoff, ...) {
-    args_list <- as.list(environment())
+    args_list <- c(as.list(environment()), list(...))
     cl <- match.call()
     mdfa.orig <- do.call(mdfa_core, args_list)
     mdfa.orig$call <- cl
