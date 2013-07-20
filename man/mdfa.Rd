@@ -25,7 +25,9 @@
   dependent, and the remaining columns are the predictors.
 }
 \examples{
-m <- mdfa(y ~ a + b, df)
+# Reproduce Wildi's 2012-06 EURI example
+m <- mdfa(gdp_monthly ~ gdp_monthly + production_sa_1 + order_book_sa_2 + stocks_sa_4 + prod_expect_sa_5,
+        data = euri)
 summary(m)
 plot(m)
 coef(m)

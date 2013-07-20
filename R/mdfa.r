@@ -22,10 +22,28 @@ mdfa_model_matrix <- function(formula, data) {
 #' Wrapper around Marc's code that sets defaults and is available for dispatch 
 #' from within the mdfa family of functions.
 #' 
-mdfa_core <- function(L, cutoff, spectral_estimate, Gamma=NULL, K=NROW(spectral_estimate)-1, lambda=0, Lag=0, expweight=0, 
-        i1=FALSE, i2=FALSE, weight_constraint=1, lambda_cross=0, lambda_decay=c(0, 0), lambda_smooth=0.1,
-        lin_expweight=FALSE, shift_constraint=0, grand_mean=TRUE, ...) {
+mdfa_core <- function(L,
+                      cutoff,
+                      spectral_estimate, 
+                      Gamma = NULL,
+                      K = NROW(spectral_estimate)-1,
+                      lambda = 0,
+                      Lag = 0,
+                      expweight = 0,
+                      i1 = FALSE,
+                      i2 = FALSE,
+                      weight_constraint = 1,
+                      lambda_cross = 0,
+                      lambda_decay = c(0, 0),
+                      lambda_smooth = 0.1,
+                      lin_expweight = FALSE,
+                      shift_constraint = 0,
+                      grand_mean = TRUE, ...) {
     args_list <- as.list(environment())
+    #maybe the line above should be:
+    #args_list <- c(as.list(environment()), list(...))
+    #but we'd have to add an ignored ... into mdfa_analytic_new to be sure it doesn't break things
+    #print(list(args_list[['i1']], args_list[['i2']]))
     args_list[['data']] <- NULL
     args_list[['weight_func']] <- spectral_estimate
     args_list[['spectral_estimate']] <- NULL
@@ -56,7 +74,8 @@ mdfa_core <- function(L, cutoff, spectral_estimate, Gamma=NULL, K=NROW(spectral_
 #' @S3method mdfa spectral_estimate
 #' @examples
 #' # Reproduce Wildi's 2012-06 EURI example
-#' m <- mdfa(y ~ a + b, euri)
+#' m <- mdfa(gdp_monthly ~ gdp_monthly + production_sa_1 + order_book_sa_2 + stocks_sa_4 + prod_expect_sa_5,
+#'         data = euri)
 #' summary(m)
 #' plot(m)
 #' coef(m)
